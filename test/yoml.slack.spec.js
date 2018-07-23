@@ -12,13 +12,13 @@ chai.use( sinon_chai );
 describe('Slack', () => {
   describe("constructor", ()=>{
     it("has a client", ()=>{
-      var subject = new Slack()  
-      expect( subject.client ).not.to.be.a( 'null' ) 
-    }) 
+      var subject = new Slack();
+      expect( subject.client ).not.to.be.undefined;
+    })
     it("sets the webhook to the client", ()=>{
       var slack_node = Slack.__get__( 'SlackNode' ),
           setWH = sinon.stub( slack_node.prototype, 'setWebhook' ),
-          subject = new Slack( { webhook: 'http://testhook'})   
+          subject = new Slack( { webhook: 'http://testhook'})
 
       expect( setWH ).to.be.called
       expect( setWH.firstCall.calledWith( 'http://testhook' ) ).to.be.true

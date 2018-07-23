@@ -4,7 +4,15 @@ var chai        = require('chai'),
     expect      = chai.expect,
     sinon       = require('sinon'),
     sinon_chai  = require('sinon-chai'),
-    Logger      = require('../lib/yoml');
+    rewire      = require('rewire'),
+    Logger      = rewire('../lib/yoml'),
+
+    Console     = Logger.__get__( 'Console' ),
+    Redis       = Logger.__get__( 'Redis' ),
+    Slack       = Logger.__get__( 'Slack' )
+    ;
+
+
 
 chai.use( sinon_chai );
 
@@ -15,6 +23,9 @@ describe('yoml', () => {
     beforeEach( () => {
       subject = new Logger();
     })
+    it( 'should have a console transport initialized by default', ()=>{
+      expect( subject._transports[ 0 ] ).to.be.instanceOf( Console );
+    })
     it( 'should have an info function' , () => {
       expect( subject.info ).to.be.a('function');
     })
@@ -23,6 +34,29 @@ describe('yoml', () => {
     })
     it( 'should have an warn function' , () => {
       expect( subject.warn ).to.be.a('function');
+    })
+  })
+
+  describe( 'configureTransports', ()=>{
+    var subject;
+    beforeEach( () => {
+      subject = new Logger();
+    })
+    it( 'instantiate a console transport by default', ()=>{
+      var transports = subject.configureTransports()
+      expect( transports[0] ).to.be.instanceOf(Console);
+    })
+    it( 'instantiate a console transport', ()=>{
+      var transports = subject.configureTransports( { transports: { console: {} }} )
+      expect( transports[0] ).to.be.instanceOf(Console);
+    })
+    it( 'instantiate a slack transport', ()=>{
+      var transports = subject.configureTransports( { transports: { slack: {} }} )
+      expect( transports[0] ).to.be.instanceOf(Slack);
+    })
+    it( 'instantiate a redis transport', ()=>{
+      var transports = subject.configureTransports( { transports: { redis: {} }} )
+      expect( transports[0] ).to.be.instanceOf(Redis);
     })
   })
 
