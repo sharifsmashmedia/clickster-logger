@@ -8,19 +8,23 @@ chai.use( sinon_chai );
 
 describe('Transport', () => {
   describe( "hostname", ()=>{
-    var subject,emit;  
+    var subject,emit;
     beforeEach( ()=>{
-      subject = new Transport();  
+      subject = new Transport();
     })
     it( "returns a string", ()=>{
       expect( subject.hostname() ).to.be.a('string')
     })
   })
   describe( "emit", ()=>{
-    var subject, emit;
+    var subject, emit, sandbox;
     beforeEach( ()=>{
+      sandbox = sinon.createSandbox();
       subject = new Transport( { logLevel: 'info' });
-      emit = sinon.spy( subject, 'emitLog' )
+      emit = sandbox.spy( subject, 'emitLog' )
+    });
+    afterEach(()=>{
+      sandbox.restore();
     })
     it( "doesn't emit if level doesn't correspond", ()=>{
       subject.log( 'debug', 'test' );
@@ -29,6 +33,11 @@ describe('Transport', () => {
     it( "emit if level correspond", ()=>{
       subject.log( 'info', 'test' );
       expect( emit ).to.have.been.calledWith( 'info', 'test' );
+    })
+    it( "calls emit if prefilter disabled", ()=>{
+      subject.unfiltered = true;
+      subject.log( 'debug', 'test' );
+      expect( emit ).to.have.been.calledWith( 'debug', 'test' );
     })
   })
 })

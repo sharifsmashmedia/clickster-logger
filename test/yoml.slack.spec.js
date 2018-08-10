@@ -84,7 +84,12 @@ describe('Slack', () => {
       it( "send hostname as username", ()=>{
         subject.emitLog( 'info', 'test' )
         expect( webhook.firstCall.calledWith( sinon.match.has( 'username',subject.hostname() ) ) ).to.be.true
-      } )
+      })
+      it( "sends topic even if log level doesn't match", ()=>{
+        subject = new Slack( { logLevel: 'error', channel: 'test', topics: { topic: 'test_topic' } } );
+        subject.emitLog( 'info', 'test', { topic: 'topic' } )
+        expect( webhook ).to.be.calledOnce;
+      })
     })
     describe( "sending attachment", ()=>{
       var subject, request, post
@@ -107,20 +112,20 @@ describe('Slack', () => {
       })
       it( "sends data as content", ()=>{
         subject.emitLog( 'info', 'test', {attachment: { data: "test"} } )
-        expect( 
-          post.firstCall.calledWith( 
-            sinon.match.has( 'form', 
-              sinon.match.has( 'content', 'test' ) ) ) 
+        expect(
+          post.firstCall.calledWith(
+            sinon.match.has( 'form',
+              sinon.match.has( 'content', 'test' ) ) )
         ).to.be.true
       })
       it( "applies a formatter if specified", ()=>{
         subject.format = '<%= other %>, <%= data %>';
         subject.emitLog( 'info', 'test', { attachment: { other: 'foo', data: "test"} } )
-        expect( 
-          post.firstCall.calledWith( 
-            sinon.match.has( 'form', 
+        expect(
+          post.firstCall.calledWith(
+            sinon.match.has( 'form',
               sinon.match.has( 'content', "foo, test"
-              ) ) ) 
+              ) ) )
         ).to.be.true
       })
       it( "sends token", ()=>{
