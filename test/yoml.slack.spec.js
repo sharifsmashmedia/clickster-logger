@@ -58,6 +58,17 @@ describe('Slack', () => {
         expect( response ).to.have.lengthOf( 1 );
       })
     })
+    describe( "with duplicate channels", ()=>{
+      var subject;
+      beforeEach(()=>{
+        subject = new Slack( { channel: 'dup', topics: { 'topic': 'dup' }});
+      })
+      it( "returns channel", ()=>{
+        var response = subject.getChannels( 'info', { topic: 'topic' } )
+        expect( response ).to.include( "dup" );
+        expect( response ).to.have.lengthOf( 1 );
+      })
+    })
   })
   describe( "emit", ()=>{
     describe( "sending message", ()=>{
