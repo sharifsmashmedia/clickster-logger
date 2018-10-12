@@ -151,4 +151,38 @@ describe('Slack', () => {
       })
     })
   })
+  describe( "hasAttachmentStructure", ()=>{
+    var subject;
+    beforeEach(()=>{
+      subject = new Slack( { channel: 'test', token: "test_token" })
+    })
+    it( "detects attachment structure", ()=>{
+      expect( subject.hasAttachmentStructure( "" ) ).to.be.false;
+      expect( subject.hasAttachmentStructure( {} ) ).to.be.false;
+      expect( subject.hasAttachmentStructure( { data: "" } ) ).to.be.true;
+    })
+  })
+  describe( "fixAttachment", ()=>{
+    var subject,
+        attachment_keys = ['filename', 'filetype', 'title','data'];
+    beforeEach(()=>{
+      subject = new Slack( { channel: 'test', token: "test_token" })
+    })
+    it( "fixes a partial object", ()=>{
+      expect( subject.fixAttachment( { data: "test_data" } ) ).to.have.all.keys( attachment_keys )
+    })
+    it( "fixes a string", ()=>{
+      expect( subject.fixAttachment( "test_data" ) ).to.have.all.keys( attachment_keys )
+    })
+    it( "fixes an attachment with an error object", ()=>{
+      var result = subject.fixAttachment( new Error( "test", "lala" ) );
+      expect( result ).to.have.all.keys( attachment_keys );
+      expect( result.data ).to.equal( 'Error: test' );
+    })
+    it( "fixes an random object", ()=>{
+      var result = subject.fixAttachment( { test: "x" } )
+      expect( result ).to.have.all.keys( attachment_keys );
+      expect( result.data ).to.equal( '{\n  "test": "x"\n}' );
+    })
+  })
 })
