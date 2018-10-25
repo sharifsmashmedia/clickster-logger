@@ -19,7 +19,7 @@ chai.use( sinon_chai );
 describe('yoml', () => {
 
   describe( 'functions', () => {
-    var subject;
+    var subject, emit;
     beforeEach( () => {
       subject = new Logger();
     })
@@ -34,6 +34,42 @@ describe('yoml', () => {
     })
     it( 'should have an warn function' , () => {
       expect( subject.warn ).to.be.a('function');
+    })
+    describe( "comodity functions call log with proper log level", () => {
+      var emit;
+      beforeEach(()=>{
+        emit    = sinon.stub( subject, 'log' );
+      })
+      it("info calls log with proper log level", ()=>{
+        subject.info("test");
+        expect( emit ).to.have.been.calledWith( "info", "test" );
+      })
+      it("error calls log with proper log level", ()=>{
+        subject.error("test");
+        expect( emit ).to.have.been.calledWith( "error", "test" );
+      })
+      it("warn calls log with proper log level", ()=>{
+        subject.warn("test");
+        expect( emit ).to.have.been.calledWith( "warn", "test" );
+      })
+    })
+    describe( "comodity functions pass options", () => {
+      var emit;
+      beforeEach(()=>{
+        emit    = sinon.stub( subject, 'log' );
+      })
+      it("info calls log with proper log level", ()=>{
+        subject.info("test", { attachment: "" });
+        expect( emit ).to.have.been.calledWithExactly( "info", "test", {attachment: ""});
+      })
+      it("error calls log with proper log level", ()=>{
+        subject.error("test", { attachment: "" });
+        expect( emit ).to.have.been.calledWithExactly( "error", "test", {attachment: ""});
+      })
+      it("warn calls log with proper log level", ()=>{
+        subject.warn("test", { attachment: "" });
+        expect( emit ).to.have.been.calledWith( "warn", "test", {attachment: ""});
+      })
     })
   })
 
