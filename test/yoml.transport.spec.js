@@ -6,7 +6,7 @@ var chai        = require('chai'),
 
 chai.use( sinon_chai );
 
-describe('Transport', () => {
+describe.only('Transport', () => {
   describe( "hostname", ()=>{
     var subject,emit;
     beforeEach( ()=>{
@@ -14,6 +14,25 @@ describe('Transport', () => {
     })
     it( "returns a string", ()=>{
       expect( subject.hostname() ).to.be.a('string')
+    })
+  })
+  describe( "isRepeat", ()=>{
+    var subject, sandbox;
+    beforeEach( ()=>{
+      sandbox = sinon.createSandbox();
+      subject = new Transport( { logLevel: 'info' });
+      emit = sandbox.spy( subject, 'emitLog' )
+    });
+    it( "adds one to repeat if message is equal", ()=>{
+      subject.isRepeat('info', 'test');
+      subject.isRepeat('info', 'test');
+      expect( subject.repeat ).to.equal( 1 );
+    })
+    it( "adds resets counter when different message", ()=>{
+      subject.isRepeat('info', 'test');
+      subject.isRepeat('info', 'test');
+      subject.isRepeat('info', 'end');
+      expect( subject.repeat ).to.equal( 0 );
     })
   })
   describe( "emit", ()=>{
@@ -38,6 +57,15 @@ describe('Transport', () => {
       subject.unfiltered = true;
       subject.log( 'debug', 'test' );
       expect( emit ).to.have.been.calledWith( 'debug', 'test' );
+    })
+    describe.only("repeat", ()=>{
+      it("keep equal messages from displaying", ()=>{
+        [...Array(5)].forEach(_ => subject.log( 'info', 'test') );
+        subject.log( 'info', 'end' );
+        expect( emit.firstCall ).to.have.been.calledWithExactly( 'info', 'test', undefined );
+        expect( emit.secondCall ).to.have.been.calledWithExactly( 'info', 'repeated 4 times', undefined );
+        expect( emit.thirdCall ).to.have.been.calledWithExactly( 'info', 'end', undefined );
+      })
     })
   })
 })
