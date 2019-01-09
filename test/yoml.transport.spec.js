@@ -63,7 +63,7 @@ describe.only('Transport', () => {
         [...Array(5)].forEach(_ => subject.log( 'info', 'test') );
         subject.log( 'info', 'end' );
         expect( emit.firstCall ).to.have.been.calledWithExactly( 'info', 'test', undefined );
-        expect( emit.secondCall ).to.have.been.calledWithExactly( 'info', 'repeated 4 times', undefined );
+        expect( emit.secondCall ).to.have.been.calledWithExactly( 'info', 'test (repeated 4 times)', {} );
         expect( emit.thirdCall ).to.have.been.calledWithExactly( 'info', 'end', undefined );
       })
     })
