@@ -101,6 +101,12 @@ describe('Slack', () => {
         subject.emitLog( 'info', 'test', { topic: 'topic' } )
         expect( webhook ).to.be.calledOnce;
       })
+      it( "includes stack trace as attachment when log level is error", ()=>{
+        subject = new Slack( { logLevel: 'error', channel: 'test' } );
+        subject.emitLog( 'error', 'test' )
+        console.log( webhook.args[0] );
+        expect( webhook.firstCall.calledWith( sinon.match.has( 'attachments' ) ) ).to.be.true;
+      })
     })
     describe( "sending attachment", ()=>{
       var subject, request, post

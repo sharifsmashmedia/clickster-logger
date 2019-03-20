@@ -6,7 +6,7 @@ var chai        = require('chai'),
 
 chai.use( sinon_chai );
 
-describe.only('Transport', () => {
+describe('Transport', () => {
   describe( "hostname", ()=>{
     var subject,emit;
     beforeEach( ()=>{
@@ -35,6 +35,18 @@ describe.only('Transport', () => {
       expect( subject.repeat ).to.equal( 0 );
     })
   })
+  describe( "stackTrace", ()=>{
+    var subject,emit;
+    beforeEach( ()=>{
+      subject = new Transport();
+    })
+    it( "returns a string", ()=>{
+      expect( subject.stackTrace() ).to.be.a( 'string' );
+    })
+    it( "returns the caller as the first line in stack trace", ()=>{
+      expect( subject.stackTrace() ).to.match( /^\s+at runCallback/ );
+    })
+  })
   describe( "emit", ()=>{
     var subject, emit, sandbox;
     beforeEach( ()=>{
@@ -58,7 +70,7 @@ describe.only('Transport', () => {
       subject.log( 'debug', 'test' );
       expect( emit ).to.have.been.calledWith( 'debug', 'test' );
     })
-    describe.only("repeat", ()=>{
+    describe("repeat", ()=>{
       it("keep equal messages from displaying", ()=>{
         [...Array(5)].forEach(_ => subject.log( 'info', 'test') );
         subject.log( 'info', 'end' );
