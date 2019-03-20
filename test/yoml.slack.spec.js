@@ -105,7 +105,7 @@ describe('Slack', () => {
         subject = new Slack( { logLevel: 'error', channel: 'test' } );
         subject.emitLog( 'error', 'test' )
         console.log( webhook.args[0] );
-        expect( webhook.firstCall.calledWith( sinon.match.has( 'attachments' ) ) ).to.be.true;
+        expect( webhook.firstCall.calledWith( sinon.match.has( 'attachments', sinon.match.array ) ) ).to.be.true;
       })
     })
     describe( "sending attachment", ()=>{
