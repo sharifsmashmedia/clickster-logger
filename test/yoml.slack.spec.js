@@ -152,7 +152,7 @@ describe('Slack', () => {
           post.firstCall.calledWith(
             sinon.match.has( 'form',
               sinon.match.has( 'token', "test_token"
-              ) ) ) 
+              ) ) )
         ).to.be.true
       })
     })
