@@ -79,7 +79,7 @@ describe('Transport', () => {
     it('formats an error', () => {
       expect(
         subject.formatMessage(new Error('testing'))
-      ).toEqual('testing');
+      ).toEqual('Error: testing');
     });
     it('formats an object', () => {
       expect(
