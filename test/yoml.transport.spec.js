@@ -71,4 +71,25 @@ describe('Transport', () => {
       });
     });
   });
+  describe('formatMessage', () => {
+    let subject;
+    beforeEach(() => {
+      subject = new Transport({ logLevel: 'info' });
+    });
+    it('formats an error', () => {
+      expect(
+        subject.formatMessage(new Error('testing'))
+      ).toEqual('testing');
+    });
+    it('formats an object', () => {
+      expect(
+        subject.formatMessage({ test: 'test' })
+      ).toEqual('{\n  "test": "test"\n}');
+    });
+    it('leaves a string alone', () => {
+      expect(
+        subject.formatMessage('test string')
+      ).toEqual('test string');
+    });
+  });
 });
