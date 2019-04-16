@@ -116,6 +116,25 @@ describe('Slack', () => {
         ).toEqual(expect.objectContaining({ attachments: expect.any(Array) }));
       });
     });
+    describe('message format', () => {
+      let subject;
+      beforeEach(() => {
+        subject = new Slack({ channel: 'test', topics: { topic: 'test_topic' } });
+        subject.client.webhook = jest.fn();
+      });
+      it('send an error as string', () => {
+        subject.emitLog('error', new Error('test'));
+        expect(
+          subject.client.webhook.mock.calls[0][0]
+        ).toEqual(expect.objectContaining({ text: 'Error: test' }));
+      });
+      it('send an object as string with code format', () => {
+        subject.emitLog('info', { test: 'test' });
+        expect(
+          subject.client.webhook.mock.calls[0][0]
+        ).toEqual(expect.objectContaining({ text: '```{\n  "test": "test"\n}```' }));
+      });
+    });
     describe('sending attachment', () => {
       let subject;
       beforeEach(() => {
@@ -190,8 +209,8 @@ describe('Slack', () => {
       );
       expect(result.data).toEqual('Error: test');
     });
-    it('fixes an random object', () => {
-      const result = subject.fixAttachment({ test: 'x' });
+    it('fixes an random object without formating', () => {
+      const result = subject.fixAttachment({ test: 'x' }, { addFormating: false });
       attachmentKeys.forEach(
         attachmentKey => expect(result).toHaveProperty(attachmentKey)
       );
