@@ -37,5 +37,11 @@ describe('yoml.console', () => {
       expect(console.log.mock.calls).toHaveLength(2);
       expect(subject.stackTrace).toBeCalled();
     });
+
+    it('calls formatMessage when logging', () => {
+      subject.formatMessage = jest.fn();
+      subject.emitLog('info', 'test log');
+      expect(subject.formatMessage).toBeCalled();
+    });
   });
 });
