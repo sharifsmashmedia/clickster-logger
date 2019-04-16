@@ -1,38 +1,31 @@
-var chai        = require('chai'),
-    expect      = chai.expect,
-    sinon       = require('sinon'),
-    sinon_chai  = require('sinon-chai'),
-    rewire      = require('rewire'),
+/* globals expect describe it beforeEach jest */
 
-    Redis       = rewire('../lib/yoml.redis')
-    ;
+// const rewire = require('rewire'),
+const Redis = require('../lib/yoml.redis');
 
-describe('Redis', ()=>{
-  var redis;
-  before(() => {
-    redis = Redis.__get__('redis')
-    sinon.stub( redis, 'createClient' ).returns( sinon.mock() );
-  })
-  describe( "constructor", ()=>{
-    it( "has a client", ()=>{
-      var subject = new Redis( { channel: 'test_channel' } )
-      expect( subject.client ).not.to.be.undefined
-      expect( subject.channel ).to.equal( 'test_channel' )
-    })
-  })
-  describe( "emitLog", ()=>{
-    var subject, client, trim;
-    beforeEach(()=>{
-      subject = new Redis( { channel: 'test_channel', cap: 10 });
-      subject.client.lpush = sinon.stub()
-      subject.client.ltrim = sinon.stub()
-      subject.client.publish = sinon.stub()
-    })
-    it( "calls push on client", ()=>{
-      subject.emitLog( 'info', 'test_log' )
-      expect( subject.client.lpush ).to.be.calledWith( 'test_channel', 'info:test_log' )
-      expect( subject.client.ltrim ).to.be.calledWith( 'test_channel', 0, 9 )
-      expect( subject.client.publish ).to.be.calledWith( 'test_channel', 'info:test_log' )
-    })
-  })
-})
+describe('Redis', () => {
+  describe('constructor', () => {
+    it('has a client', () => {
+      const subject = new Redis({ channel: 'test_channel' });
+      expect(subject.client).not.toBeUndefined();
+      expect(subject.channel).toEqual('test_channel');
+    });
+  });
+  describe('emitLog', () => {
+    let subject;
+
+    beforeEach(() => {
+      subject = new Redis({ channel: 'test_channel', cap: 10 });
+      jest.spyOn(subject.client, 'lpush');
+      jest.spyOn(subject.client, 'ltrim');
+      jest.spyOn(subject.client, 'publish');
+    });
+    it('calls push on client', () => {
+      subject.emitLog('info', 'test_log');
+      expect(subject.client.lpush).toBeCalled();
+      expect(subject.client.lpush).toBeCalledWith('test_channel', 'info:test_log');
+      expect(subject.client.ltrim).toBeCalledWith('test_channel', 0, 9);
+      expect(subject.client.publish).toBeCalledWith('test_channel', 'info:test_log');
+    });
+  });
+});

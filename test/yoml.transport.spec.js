@@ -1,83 +1,74 @@
-var chai        = require('chai'),
-    expect      = chai.expect,
-    sinon       = require('sinon'),
-    sinon_chai  = require('sinon-chai'),
-    Transport   = require('../lib/yoml.transport');
-
-chai.use( sinon_chai );
+/* globals jest describe it expect beforeEach */
+const Transport = require('../lib/yoml.transport');
 
 describe('Transport', () => {
-  describe( "hostname", ()=>{
-    var subject,emit;
-    beforeEach( ()=>{
+  describe('hostname', () => {
+    let subject;
+    beforeEach(() => {
       subject = new Transport();
-    })
-    it( "returns a string", ()=>{
-      expect( subject.hostname() ).to.be.a('string')
-    })
-  })
-  describe( "isRepeat", ()=>{
-    var subject, sandbox;
-    beforeEach( ()=>{
-      sandbox = sinon.createSandbox();
-      subject = new Transport( { logLevel: 'info' });
-      emit = sandbox.spy( subject, 'emitLog' )
     });
-    it( "adds one to repeat if message is equal", ()=>{
+    it('returns a string', () => {
+      expect(typeof subject.hostname()).toBe('string');
+    });
+  });
+  describe('isRepeat', () => {
+    let subject;
+    beforeEach(() => {
+      subject = new Transport({ logLevel: 'info' });
+      subject.emit = jest.fn();
+    });
+    it('adds one to repeat if message is equal', () => {
       subject.isRepeat('info', 'test');
       subject.isRepeat('info', 'test');
-      expect( subject.repeat ).to.equal( 1 );
-    })
-    it( "adds resets counter when different message", ()=>{
+      expect(subject.repeat).toEqual(1);
+    });
+    it('adds resets counter when different message', () => {
       subject.isRepeat('info', 'test');
       subject.isRepeat('info', 'test');
       subject.isRepeat('info', 'end');
-      expect( subject.repeat ).to.equal( 0 );
-    })
-  })
-  describe( "stackTrace", ()=>{
-    var subject,emit;
-    beforeEach( ()=>{
-      subject = new Transport();
-    })
-    it( "returns a string", ()=>{
-      expect( subject.stackTrace() ).to.be.a( 'string' );
-    })
-    it( "returns the caller as the first line in stack trace", ()=>{
-      expect( subject.stackTrace() ).to.match( /^\s+at runCallback/ );
-    })
-  })
-  describe( "emit", ()=>{
-    var subject, emit, sandbox;
-    beforeEach( ()=>{
-      sandbox = sinon.createSandbox();
-      subject = new Transport( { logLevel: 'info' });
-      emit = sandbox.spy( subject, 'emitLog' )
+      expect(subject.repeat).toEqual(0);
     });
-    afterEach(()=>{
-      sandbox.restore();
-    })
-    it( "doesn't emit if level doesn't correspond", ()=>{
-      subject.log( 'debug', 'test' );
-      expect( emit ).to.not.have.been.called;
-    })
-    it( "emit if level correspond", ()=>{
-      subject.log( 'info', 'test' );
-      expect( emit ).to.have.been.calledWith( 'info', 'test' );
-    })
-    it( "calls emit if prefilter disabled", ()=>{
+  });
+  describe('stackTrace', () => {
+    let subject;
+    beforeEach(() => {
+      subject = new Transport();
+    });
+    it('returns a string', () => {
+      expect(typeof subject.stackTrace()).toBe('string');
+    });
+    it('returns the caller as the first line in stack trace', () => {
+      expect(subject.stackTrace()).toMatch(/^\s+at process._tickCallback/);
+    });
+  });
+  describe('emit', () => {
+    let subject;
+    beforeEach(() => {
+      subject = new Transport({ logLevel: 'info' });
+      subject.emitLog = jest.fn();
+    });
+    it("doesn't emit if level doesn't correspond", () => {
+      subject.log('debug', 'test');
+      expect(subject.emitLog).not.toBeCalled();
+    });
+    it('emit if level correspond', () => {
+      subject.log('info', 'test');
+      expect(subject.emitLog).toBeCalledWith('info', 'test', undefined);
+    });
+    it('calls emit if prefilter disabled', () => {
       subject.unfiltered = true;
-      subject.log( 'debug', 'test' );
-      expect( emit ).to.have.been.calledWith( 'debug', 'test' );
-    })
-    describe("repeat", ()=>{
-      it("keep equal messages from displaying", ()=>{
-        [...Array(5)].forEach(_ => subject.log( 'info', 'test') );
-        subject.log( 'info', 'end' );
-        expect( emit.firstCall ).to.have.been.calledWithExactly( 'info', 'test', undefined );
-        expect( emit.secondCall ).to.have.been.calledWithExactly( 'info', 'test (repeated 4 times)', {} );
-        expect( emit.thirdCall ).to.have.been.calledWithExactly( 'info', 'end', undefined );
-      })
-    })
-  })
-})
+      subject.log('debug', 'test');
+      expect(subject.emitLog).toBeCalledWith('debug', 'test', undefined);
+    });
+    describe('repeat', () => {
+      it('keep equal messages from displaying', () => {
+        [...Array(5)].forEach(() => subject.log('info', 'test'));
+        subject.log('info', 'end');
+
+        expect(subject.emitLog.mock.calls[0]).toEqual(['info', 'test', undefined]);
+        expect(subject.emitLog.mock.calls[1]).toEqual(['info', 'test (repeated 4 times)', {}]);
+        expect(subject.emitLog.mock.calls[2]).toEqual(['info', 'end', undefined]);
+      });
+    });
+  });
+});
