@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.3.1"></a>
+## [1.3.1](https://github.com/kasthor/yoml/compare/v1.3.0...v1.3.1) (2019-04-16)
+
+
+
 <a name="1.3.0"></a>
 # [1.3.0](/compare/v1.2.3...v1.3.0) (2019-04-16)
 
