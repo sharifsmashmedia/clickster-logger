@@ -87,13 +87,13 @@ describe('Slack', () => {
           subject.client.webhook.mock.calls[0][0]
         ).toEqual(expect.objectContaining({ text: 'test' }));
       });
-      it('calls webhook twice with the right parameters when topic specified', () => {
+      it('calls webhook once with the topic channel when topic specified', () => {
         subject.emitLog('info', 'test', { topic: 'topic' });
         expect(subject.client.webhook).toBeCalled();
-        expect(subject.client.webhook.mock.calls.length).toBe(2);
+        expect(subject.client.webhook.mock.calls.length).toBe(1);
         expect(
           subject.client.webhook.mock.calls[0][0]
-        ).toEqual(expect.objectContaining({ text: 'test' }));
+        ).toEqual(expect.objectContaining({ text: 'test', channel: 'test_topic' }));
       });
       it('send hostname as username', () => {
         subject.emitLog('info', 'test');
