@@ -116,6 +116,32 @@ describe('Slack', () => {
         ).toEqual(expect.objectContaining({ attachments: expect.any(Array) }));
       });
     });
+    describe('sending message with attachment', () => {
+      let subject;
+      beforeEach(() => {
+        subject = new Slack({ channel: 'test', topics: { topic: 'test_topic' } });
+        subject.client.webhook = jest.fn();
+      });
+
+      it('send an attachment if specified', () => {
+        subject.emitLog('info', 'sample', { attachments: ['test'] });
+        expect(subject.client.webhook).toBeCalled();
+        expect(
+          subject.client.webhook.mock.calls[0][0]
+        ).toEqual(expect.objectContaining({
+          attachments:
+            expect.arrayContaining([expect.objectContaining({ text: 'test' })])
+        }));
+      });
+
+      it('send two attachments when logging an error', () => {
+        subject.emitLog('error', 'sample', { attachments: ['test'] });
+        expect(subject.client.webhook).toBeCalled();
+        expect(
+          subject.client.webhook.mock.calls[0][0].attachments
+        ).toHaveLength(2);
+      });
+    });
     describe('message format', () => {
       let subject;
       beforeEach(() => {
@@ -215,6 +241,25 @@ describe('Slack', () => {
         attachmentKey => expect(result).toHaveProperty(attachmentKey)
       );
       expect(result.data).toEqual('{\n  "test": "x"\n}');
+    });
+  });
+  describe('formatAttachment', () => {
+    let subject;
+    beforeEach(() => {
+      subject = new Slack({ channel: 'test', token: 'test_token' });
+    });
+
+    it('returns the same string within an object', () => {
+      const result = subject.formatAttachment('test string');
+      expect(result).toEqual(expect.objectContaining({ text: 'test string' }));
+    });
+    it('returns the object as a string within an attachment object', () => {
+      const result = subject.formatAttachment({ test: 'test' });
+      expect(result).toEqual(expect.objectContaining({ text: '```{\n  "test": "test"\n}```' }));
+    });
+    it('resturns the error as a formatted attachment object', () => {
+      const result = subject.formatAttachment(new Error('test'));
+      expect(result).toEqual(expect.objectContaining({ title: 'Error: test', text: expect.stringContaining('```') }));
     });
   });
 });
