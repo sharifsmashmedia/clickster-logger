@@ -1,6 +1,6 @@
 {
   "name": "yoml",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "description": "Light weight extensible logger library",
   "main": "lib/yoml.js",
   "scripts": {
