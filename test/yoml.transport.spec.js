@@ -38,7 +38,7 @@ describe('Transport', () => {
       expect(typeof subject.stackTrace()).toBe('string');
     });
     it('returns the caller as the first line in stack trace', () => {
-      expect(subject.stackTrace()).toMatch(/^\s+at process._tickCallback/);
+      expect(subject.stackTrace()).toMatch(/^\s+at new Promise/);
     });
   });
   describe('emit', () => {

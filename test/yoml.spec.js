@@ -117,7 +117,39 @@ describe('yoml', () => {
       // Fake time
       subject._times.test._start = new Date((new Date()).getTime() - 5000);
       subject.timeEnd('test');
-      expect(subject.log.mock.calls[0]).toEqual(['time', expect.stringMatching(/test:\d+ms/)]);
+      expect(subject.log.mock.calls[0]).toEqual(['slow', expect.stringMatching(/test:\d+ms/)]);
+    });
+  });
+
+  describe('op', () => {
+    let subject,
+      subjectTransport;
+    beforeEach(() => {
+      subject = new Logger({ logLevel: 'op' });
+      jest.spyOn(subject, 'log');
+      subjectTransport = jest.spyOn(subject._transports[0], 'emitLog');
+    });
+    it('starts an operation', () => {
+      subject.op('test');
+      expect(subject._operations).toHaveProperty('test');
+      expect(subject._operations.test.name).toEqual('test');
+    });
+    it('emits if slow', () => {
+      subject.op('test');
+      // Fake time
+      subject._operations.test._start = new Date((new Date()).getTime() - 5000);
+      subject.debug('test debug');
+      subject.opEnd('test', { slow: 1000 });
+      expect(subjectTransport.mock.calls[0]).toEqual(['op', expect.stringMatching(/test:DEBUG:test debug/), undefined]);
+      expect(subjectTransport.mock.calls[1]).toEqual(['op', expect.stringMatching(/test:\d+ms/), undefined]);
+    });
+    it('does not emit if not slow', () => {
+      subject.op('test');
+      subject._operations.test._start = new Date((new Date()).getTime() - 1000);
+      subject.debug('test debug');
+      subject.opEnd('test', { slow: 5000 });
+
+      expect(subjectTransport).not.toHaveBeenCalled();
     });
   });
 });
