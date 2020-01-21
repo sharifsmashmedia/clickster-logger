@@ -115,8 +115,25 @@ describe('yoml', () => {
     it('emits when ending the timer', () => {
       subject.time('test');
       // Fake time
-      subject._times.test._start = new Date((new Date()).getTime() - 5000);
+      subject._times.test._start = new Date((new Date()).getTime() - 1000);
       subject.timeEnd('test');
+      expect(subject.log).toHaveBeenCalledTimes(1);
+      expect(subject.log.mock.calls[0]).toEqual(['time', expect.stringMatching(/test:\d+ms/)]);
+    });
+    it('emits time when ending timer before tolerance', () => {
+      subject.time('test');
+      // Fake time
+      subject._times.test._start = new Date((new Date()).getTime() - 1000);
+      subject.timeEnd('test', { slow: 3000 });
+      expect(subject.log).toHaveBeenCalledTimes(1);
+      expect(subject.log.mock.calls[0]).toEqual(['time', expect.stringMatching(/test:\d+ms/)]);
+    });
+    it('emits slow when ending the timer after tolerance', () => {
+      subject.time('test');
+      // Fake time
+      subject._times.test._start = new Date((new Date()).getTime() - 5000);
+      subject.timeEnd('test', { slow: 3000 });
+      expect(subject.log).toHaveBeenCalledTimes(1);
       expect(subject.log.mock.calls[0]).toEqual(['slow', expect.stringMatching(/test:\d+ms/)]);
     });
   });
@@ -125,7 +142,7 @@ describe('yoml', () => {
     let subject,
       subjectTransport;
     beforeEach(() => {
-      subject = new Logger({ logLevel: 'op' });
+      subject = new Logger({ logLevel: 'slow' });
       jest.spyOn(subject, 'log');
       subjectTransport = jest.spyOn(subject._transports[0], 'emitLog');
     });
@@ -140,8 +157,8 @@ describe('yoml', () => {
       subject._operations.test._start = new Date((new Date()).getTime() - 5000);
       subject.debug('test debug');
       subject.opEnd('test', { slow: 1000 });
-      expect(subjectTransport.mock.calls[0]).toEqual(['op', expect.stringMatching(/test:DEBUG:test debug/), undefined]);
-      expect(subjectTransport.mock.calls[1]).toEqual(['op', expect.stringMatching(/test:\d+ms/), undefined]);
+      expect(subjectTransport.mock.calls[0]).toEqual(['slow', expect.stringMatching(/test:DEBUG:test debug/), undefined]);
+      expect(subjectTransport.mock.calls[1]).toEqual(['slow', expect.stringMatching(/test:\d+ms/), undefined]);
     });
     it('does not emit if not slow', () => {
       subject.op('test');
