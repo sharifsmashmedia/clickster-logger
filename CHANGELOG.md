@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.6.0"></a>
+# [1.6.0](https://github.com/kasthor/yoml/compare/v1.4.0...v1.6.0) (2020-01-21)
+
+
+### Bug Fixes
+
+* slow/time issue, slow ops now appear as slow ([873f8b4](https://github.com/kasthor/yoml/commit/873f8b4))
+
+
+### Features
+
+* operation show if slow ([2dd3220](https://github.com/kasthor/yoml/commit/2dd3220))
+
+
+
 <a name="1.4.0"></a>
 # [1.4.0](https://github.com/kasthor/yoml/compare/v1.3.2...v1.4.0) (2019-04-26)
 
