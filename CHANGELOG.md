@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.6.1"></a>
+## [1.6.1](https://github.com/kasthor/yoml/compare/v1.6.0...v1.6.1) (2020-02-27)
+
+
+### Bug Fixes
+
+* init log level functions from instance ([0235116](https://github.com/kasthor/yoml/commit/0235116))
+
+
+
 <a name="1.6.0"></a>
 # [1.6.0](https://github.com/kasthor/yoml/compare/v1.4.0...v1.6.0) (2020-01-21)
 
