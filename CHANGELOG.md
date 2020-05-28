@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [2.1.0](https://github.com/kasthor/yoml/compare/v2.0.2...v2.1.0) (2020-05-28)
+
+
+### Features
+
+* use slack thru 'postMessage' ([d79bff8](https://github.com/kasthor/yoml/commit/d79bff8dc93364b5e76ec636df51bddf46fb0b2c))
+
+
+
 ## [2.0.2](https://github.com/kasthor/yoml/compare/v2.0.1...v2.0.2) (2020-05-28)
 
 
