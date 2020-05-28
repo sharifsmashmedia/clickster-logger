@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.1](https://github.com/kasthor/yoml/compare/v2.1.0...v2.1.1) (2020-05-28)
+
+
+### Bug Fixes
+
+* error when creating payload ([906b9c3](https://github.com/kasthor/yoml/commit/906b9c3c447462323b5f6b95495440bd71c67bd3))
+
+
+
 # [2.1.0](https://github.com/kasthor/yoml/compare/v2.0.2...v2.1.0) (2020-05-28)
 
 
