@@ -144,7 +144,7 @@ describe('yoml', () => {
     beforeEach(() => {
       subject = new Logger({ logLevel: 'slow' });
       jest.spyOn(subject, 'log');
-      global.console = { log: jest.fn () };
+      global.console = { log: jest.fn() };
       subjectTransport = jest.spyOn(subject._transports[0], 'emitLog');
     });
     it('starts an operation', () => {

@@ -21,11 +21,6 @@ describe('Slack', () => {
       const subject = new Slack();
       expect(subject.client).not.toBeUndefined();
     });
-    it('sets the webhook to the client', () => {
-      const subject = new Slack({ webhook: 'http://testhook' }); // eslint-disable-line no-unused-vars
-
-      expect(subject.client.setWebhook).toBeCalledWith('http://testhook');
-    });
   });
   describe('getChannels', () => {
     describe('with channel configured', () => {
