@@ -1,10 +1,10 @@
 {
   "name": "yoml",
-  "version": "2.1.1",
+  "version": "2.1.4",
   "description": "Light weight extensible logger library",
   "main": "lib/yoml.js",
   "scripts": {
-    "test": "./node_modules/.bin/jest",
+    "test": "./node_modules/.bin/jest --forceExit",
     "lint": "./node_modules/.bin/eslint .",
     "release": "./node_modules/.bin/standard-version"
   },
