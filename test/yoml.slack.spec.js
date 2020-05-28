@@ -3,17 +3,6 @@
 const Slack = require('../lib/yoml.slack');
 
 global.console = { log: jest.fn() };
-jest.mock('slack-node',
-  () => jest.fn().mockImplementation(() => ({
-    setWebhook: jest.fn(),
-    webhook: jest.fn()
-  })));
-
-// let request = jest.mock('request',
-//   () => jest.fn().mockImplementation(() => ({ post: jest.fn() })));
-
-
-jest.mock('request');
 
 describe('Slack', () => {
   describe('constructor', () => {
