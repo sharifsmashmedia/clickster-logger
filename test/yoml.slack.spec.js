@@ -1,7 +1,6 @@
 /* globals expect describe it beforeEach jest */
 
-const request = require('request'),
-  Slack = require('../lib/yoml.slack');
+const Slack = require('../lib/yoml.slack');
 
 global.console = { log: jest.fn() };
 jest.mock('slack-node',
@@ -36,7 +35,7 @@ describe('Slack', () => {
       });
       it('returns channel', () => {
         expect(
-          subject.getChannels('info', {})
+          subject.getChannels('info', null)
         ).toEqual(['test_channel']);
       });
     });
@@ -47,7 +46,7 @@ describe('Slack', () => {
       });
       it('returns channel', () => {
         expect(
-          subject.getChannels('info', {})
+          subject.getChannels('info', null)
         ).toEqual(['info_channel']);
       });
     });
@@ -58,7 +57,7 @@ describe('Slack', () => {
       });
       it('returns channel', () => {
         expect(
-          subject.getChannels('info', { topic: 'topic' })
+          subject.getChannels('info', 'topic')
         ).toEqual(['topic_channel']);
       });
     });
@@ -69,131 +68,8 @@ describe('Slack', () => {
       });
       it('returns channel', () => {
         expect(
-          subject.getChannels('info', { topic: 'topic' })
+          subject.getChannels('info', 'topic')
         ).toEqual(['dup']);
-      });
-    });
-  });
-  describe('emit', () => {
-    describe('sending message', () => {
-      let subject;
-      beforeEach(() => {
-        subject = new Slack({ channel: 'test', topics: { topic: 'test_topic' } });
-      });
-      it('calls webhook from slack-node', () => {
-        subject.emitLog('info', 'test');
-        expect(subject.client.webhook).toBeCalled();
-        expect(
-          subject.client.webhook.mock.calls[0][0]
-        ).toEqual(expect.objectContaining({ text: 'test' }));
-      });
-      it('calls webhook once with the topic channel when topic specified', () => {
-        subject.emitLog('info', 'test', { topic: 'topic' });
-        expect(subject.client.webhook).toBeCalled();
-        expect(subject.client.webhook.mock.calls.length).toBe(1);
-        expect(
-          subject.client.webhook.mock.calls[0][0]
-        ).toEqual(expect.objectContaining({ text: 'test', channel: 'test_topic' }));
-      });
-      it('send hostname as username', () => {
-        subject.emitLog('info', 'test');
-        expect(subject.client.webhook).toBeCalled();
-        expect(
-          subject.client.webhook.mock.calls[0][0]
-        ).toEqual(expect.objectContaining({ username: subject.hostname() }));
-      });
-      it("sends topic even if log level doesn't match", () => {
-        subject = new Slack({ logLevel: 'error', channel: 'test', topics: { topic: 'test_topic' } });
-        subject.emitLog('info', 'test', { topic: 'topic' });
-        expect(subject.client.webhook).toBeCalled();
-        expect(subject.client.webhook.mock.calls.length).toBe(1);
-      });
-      it('includes stack trace as attachment when log level is error', () => {
-        subject = new Slack({ logLevel: 'error', channel: 'test' });
-        subject.emitLog('error', 'test');
-        expect(
-          subject.client.webhook.mock.calls[0][0]
-        ).toEqual(expect.objectContaining({ attachments: expect.any(Array) }));
-      });
-    });
-    describe('sending message with attachment', () => {
-      let subject;
-      beforeEach(() => {
-        subject = new Slack({ channel: 'test', topics: { topic: 'test_topic' } });
-        subject.client.webhook = jest.fn();
-      });
-
-      it('send an attachment if specified', () => {
-        subject.emitLog('info', 'sample', { attachments: ['test'] });
-        expect(subject.client.webhook).toBeCalled();
-        expect(
-          subject.client.webhook.mock.calls[0][0]
-        ).toEqual(expect.objectContaining({
-          attachments:
-            expect.arrayContaining([expect.objectContaining({ text: 'test' })])
-        }));
-      });
-
-      it('send two attachments when logging an error', () => {
-        subject.emitLog('error', 'sample', { attachments: ['test'] });
-        expect(subject.client.webhook).toBeCalled();
-        expect(
-          subject.client.webhook.mock.calls[0][0].attachments
-        ).toHaveLength(2);
-      });
-    });
-    describe('message format', () => {
-      let subject;
-      beforeEach(() => {
-        subject = new Slack({ channel: 'test', topics: { topic: 'test_topic' } });
-        subject.client.webhook = jest.fn();
-      });
-      it('send an error as string', () => {
-        subject.emitLog('error', new Error('test'));
-        expect(
-          subject.client.webhook.mock.calls[0][0]
-        ).toEqual(expect.objectContaining({ text: 'Error: test' }));
-      });
-      it('send an object as string with code format', () => {
-        subject.emitLog('info', { test: 'test' });
-        expect(
-          subject.client.webhook.mock.calls[0][0]
-        ).toEqual(expect.objectContaining({ text: '```{\n  "test": "test"\n}```' }));
-      });
-    });
-    describe('sending attachment', () => {
-      let subject;
-      beforeEach(() => {
-        subject = new Slack({ channel: 'test', token: 'test_token' });
-        request.post = jest.fn();
-      });
-      it('calls post on request', () => {
-        subject.emitLog('info', 'test', { attachment: { data: 'test' } });
-        expect(request.post).toBeCalled();
-        expect(
-          request.post.mock.calls[0][0]
-        ).toEqual(expect.objectContaining({
-          form: expect.objectContaining({ content: 'test' })
-        }));
-      });
-      it('applies a formatter if specified', () => {
-        subject.format = '<%= other %>, <%= data %>';
-        subject.emitLog('info', 'test', { attachment: { other: 'foo', data: 'test' } });
-        expect(request.post).toBeCalled();
-        expect(
-          request.post.mock.calls[0][0]
-        ).toEqual(expect.objectContaining({
-          form: expect.objectContaining({ content: 'foo, test' })
-        }));
-      });
-      it('sends token', () => {
-        subject.emitLog('info', 'test', { attachment: { data: 'test' } });
-        expect(request.post).toBeCalled();
-        expect(
-          request.post.mock.calls[0][0]
-        ).toEqual(expect.objectContaining({
-          form: expect.objectContaining({ token: 'test_token' })
-        }));
       });
     });
   });
@@ -206,60 +82,6 @@ describe('Slack', () => {
       expect(subject.hasAttachmentStructure('')).toBeFalsy();
       expect(subject.hasAttachmentStructure({})).toBeFalsy();
       expect(subject.hasAttachmentStructure({ data: '' })).toBeTruthy();
-    });
-  });
-  describe('fixAttachment', () => {
-    let subject;
-    const attachmentKeys = ['filename', 'filetype', 'title', 'data'];
-    beforeEach(() => {
-      subject = new Slack({ channel: 'test', token: 'test_token' });
-    });
-    it('fixes a partial object', () => {
-      attachmentKeys.forEach(
-        attachmentKey => expect(
-          subject.fixAttachment({ data: 'test_data' })
-        ).toHaveProperty(attachmentKey)
-      );
-    });
-    it('fixes a string', () => {
-      attachmentKeys.forEach(
-        attachmentKey => expect(
-          subject.fixAttachment('test_data')
-        ).toHaveProperty(attachmentKey)
-      );
-    });
-    it('fixes an attachment with an error object', () => {
-      const result = subject.fixAttachment(new Error('test', 'lala'));
-      attachmentKeys.forEach(
-        attachmentKey => expect(result).toHaveProperty(attachmentKey)
-      );
-      expect(result.data).toEqual('Error: test');
-    });
-    it('fixes an random object without formating', () => {
-      const result = subject.fixAttachment({ test: 'x' }, { addFormating: false });
-      attachmentKeys.forEach(
-        attachmentKey => expect(result).toHaveProperty(attachmentKey)
-      );
-      expect(result.data).toEqual('{\n  "test": "x"\n}');
-    });
-  });
-  describe('formatAttachment', () => {
-    let subject;
-    beforeEach(() => {
-      subject = new Slack({ channel: 'test', token: 'test_token' });
-    });
-
-    it('returns the same string within an object', () => {
-      const result = subject.formatAttachment('test string');
-      expect(result).toEqual(expect.objectContaining({ text: 'test string' }));
-    });
-    it('returns the object as a string within an attachment object', () => {
-      const result = subject.formatAttachment({ test: 'test' });
-      expect(result).toEqual(expect.objectContaining({ text: '```{\n  "test": "test"\n}```' }));
-    });
-    it('resturns the error as a formatted attachment object', () => {
-      const result = subject.formatAttachment(new Error('test'));
-      expect(result).toEqual(expect.objectContaining({ title: 'Error: test', text: expect.stringContaining('```') }));
     });
   });
 });

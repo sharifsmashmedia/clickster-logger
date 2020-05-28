@@ -1,5 +1,6 @@
 /* globals console jest beforeEach describe it expect */
-const Console = require('../lib/yoml.console');
+const Console = require('../lib/yoml.console'),
+  Message = require('../lib/yoml.message');
 
 describe('yoml.console', () => {
   let subject;
@@ -10,38 +11,30 @@ describe('yoml.console', () => {
     });
 
     it('writes to the console', () => {
-      subject.emitLog('info', 'test');
+      subject.emitLog(new Message('test', { level: 'info' }));
       // eslint-disable-next-line no-console
       expect(console.log).toBeCalledWith(expect.stringMatching('test'));
     });
     it('logs info with the right log level', () => {
-      subject.emitLog('info', 'test');
+      subject.emitLog(new Message('test', { level: 'info' }));
       // eslint-disable-next-line no-console
       expect(console.log).toBeCalledWith(expect.stringMatching('INFO'));
     });
     it('logs warn with the right log level', () => {
-      subject.emitLog('warn', 'test');
+      subject.emitLog(new Message('test', { level: 'warn' }));
       // eslint-disable-next-line no-console
       expect(console.log).toBeCalledWith(expect.stringMatching('WARN'));
     });
     it('logs error with the right log level', () => {
-      subject.emitLog('error', 'test');
+      subject.emitLog(new Message('test', { level: 'error' }));
       // eslint-disable-next-line no-console
       expect(console.log).toBeCalledWith(expect.stringMatching('ERROR'));
     });
 
     it('logs an error and sends the stack trace', () => {
-      subject.stackTrace = jest.fn();
-      subject.emitLog('error', 'test');
+      subject.emitLog(new Message('test', { level: 'error' }));
       // eslint-disable-next-line no-console
-      expect(console.log.mock.calls).toHaveLength(2);
-      expect(subject.stackTrace).toBeCalled();
-    });
-
-    it('calls formatMessage when logging', () => {
-      subject.formatMessage = jest.fn();
-      subject.emitLog('info', 'test log');
-      expect(subject.formatMessage).toBeCalled();
+      expect(console.log).toHaveBeenCalledTimes(1);
     });
   });
 });
