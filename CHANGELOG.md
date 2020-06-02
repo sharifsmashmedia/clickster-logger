@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.7](https://github.com/kasthor/yoml/compare/v2.1.6...v2.1.7) (2020-06-02)
+
+
+### Bug Fixes
+
+* show topic messages only if on the right log level ([ba6dd7a](https://github.com/kasthor/yoml/commit/ba6dd7aba9d05e5b6879049fa9e960321a966e89))
+
 ### [2.1.6](https://github.com/kasthor/yoml/compare/v2.1.5...v2.1.6) (2020-05-28)
 
 ## [2.1.5](https://github.com/kasthor/yoml/compare/v2.1.4...v2.1.5) (2020-05-28)
