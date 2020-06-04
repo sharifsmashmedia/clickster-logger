@@ -33,6 +33,67 @@ describe(Message, () => {
       expect(subject.level).toBe('info');
     });
   });
+  describe('length', () => {
+    it('returns the length of the object', () => {
+      const subject = new Message({ a: 1 });
+
+      expect(subject.length).toBe(1);
+    });
+    it('returns the length of the object when multiple items', () => {
+      const subject = new Message({ a: 1, b: 2, c: 3 });
+
+      expect(subject.length).toBe(3);
+    });
+    it('returns the length of the string', () => {
+      const subject = new Message('this string is 33 characters long');
+
+      expect(subject.length).toBe(33);
+    });
+  });
+  describe('isSimpleObject', () => {
+    it('returns true if message was created with an object', () => {
+      const subject = new Message({ a: 1 });
+
+      expect(subject.isSimpleObject).toBeTruthy();
+    });
+
+    it('returns false if message was created with an object with nested objects', () => {
+      const subject = new Message({ a: 1, b: { c: 1 } });
+
+      expect(subject.isSimpleObject).toBeFalsy();
+    });
+
+    it('returns false if message was created with an object with string', () => {
+      const subject = new Message('test');
+
+      expect(subject.isSimpleObject).toBeFalsy();
+    });
+
+    it('returns false if message was created with an object with error', () => {
+      const subject = new Message(new Error());
+
+      expect(subject.isSimpleObject).toBeFalsy();
+    });
+  });
+  describe('isObject', () => {
+    it('returns true if message was created with an object', () => {
+      const subject = new Message({ a: 1 });
+
+      expect(subject.isObject).toBeTruthy();
+    });
+
+    it('returns false if message was created with a string', () => {
+      const subject = new Message('test');
+
+      expect(subject.isObject).toBeFalsy();
+    });
+
+    it('returns false if message was created with an error', () => {
+      const subject = new Message(new Error());
+
+      expect(subject.isObject).toBeFalsy();
+    });
+  });
 
   describe('processAttachments', () => {
     let subject;
@@ -92,7 +153,7 @@ describe(Message, () => {
       beforeEach(() => {
         subject = new Message('test message', { attachments: ['attachment'] });
       });
-      it.only('returns the attachments', () => {
+      it('returns the attachments', () => {
         expect(subject.toString()).toMatch(/test message/);
         expect(subject.toString()).toMatch(/attachment/);
       });
