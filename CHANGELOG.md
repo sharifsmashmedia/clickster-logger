@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.2.2](https://github.com/kasthor/yoml/compare/v2.2.1...v2.2.2) (2020-06-04)
+
+
+### Bug Fixes
+
+* change icon to robot face ([501a424](https://github.com/kasthor/yoml/commit/501a4248ae74ab0442494dd2f168107c6e5b20ce))
+
 ### [2.2.1](https://github.com/kasthor/yoml/compare/v2.2.0...v2.2.1) (2020-06-04)
 
 ## [2.2.0](https://github.com/kasthor/yoml/compare/v2.1.8...v2.2.0) (2020-06-04)
