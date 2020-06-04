@@ -1,16 +1,8 @@
 /* globals jest describe it expect beforeEach */
-const Transport = require('../lib/yoml.transport');
+const Transport = require('../lib/yoml.transport'),
+  Message = require('../lib/yoml.message');
 
 describe('Transport', () => {
-  describe('hostname', () => {
-    let subject;
-    beforeEach(() => {
-      subject = new Transport();
-    });
-    it('returns a string', () => {
-      expect(typeof subject.hostname()).toBe('string');
-    });
-  });
   describe('isRepeat', () => {
     let subject;
     beforeEach(() => {
@@ -18,27 +10,15 @@ describe('Transport', () => {
       subject.emit = jest.fn();
     });
     it('adds one to repeat if message is equal', () => {
-      subject.isRepeat('info', 'test');
-      subject.isRepeat('info', 'test');
+      subject.isRepeat(new Message('test', { level: 'info' }));
+      subject.isRepeat(new Message('test', { level: 'info' }));
       expect(subject.repeat).toEqual(1);
     });
     it('adds resets counter when different message', () => {
-      subject.isRepeat('info', 'test');
-      subject.isRepeat('info', 'test');
-      subject.isRepeat('info', 'end');
+      subject.isRepeat(new Message('test', { level: 'info' }));
+      subject.isRepeat(new Message('test', { level: 'info' }));
+      subject.isRepeat(new Message('end', { level: 'info' }));
       expect(subject.repeat).toEqual(0);
-    });
-  });
-  describe('stackTrace', () => {
-    let subject;
-    beforeEach(() => {
-      subject = new Transport();
-    });
-    it('returns a string', () => {
-      expect(typeof subject.stackTrace()).toBe('string');
-    });
-    it('returns the caller as the first line in stack trace', () => {
-      expect(subject.stackTrace()).toMatch(/^\s+at new Promise/);
     });
   });
   describe('loggable', () => {
@@ -51,18 +31,18 @@ describe('Transport', () => {
       const decorated = jest.fn(),
         func = subject.loggable(decorated);
 
-      func('info', 'test');
+      func(new Message('test', { level: 'info' }));
 
-      expect(decorated).toHaveBeenCalledWith('info', 'test');
+      expect(decorated).toHaveBeenCalledWith(expect.objectContaining({ level: 'info' }));
     });
 
     it('does not call the function if the log is lower than specified', () => {
       const decorated = jest.fn(),
         func = subject.loggable(decorated);
 
-      func('debug', 'test');
+      func(new Message('test', { level: 'debug' }));
 
-      expect(decorated).not.toHaveBeenCalledWith('info', 'test');
+      expect(decorated).not.toHaveBeenCalled();
     });
   });
 
@@ -76,17 +56,17 @@ describe('Transport', () => {
       const decorated = jest.fn(),
         func = subject.repeatable(decorated);
 
-      func('info', 'test');
+      func(new Message('test', { level: 'info' }));
 
-      expect(decorated).toHaveBeenCalledWith('info', 'test', undefined);
+      expect(decorated).toHaveBeenCalledWith(expect.any(Message));
     });
 
     it('calls the function just one time when called multiple times', () => {
       const decorated = jest.fn(),
         func = subject.repeatable(decorated);
 
-      func('info', 'test');
-      func('info', 'test');
+      func(new Message('test', { level: 'info' }));
+      func(new Message('test', { level: 'info' }));
 
       expect(decorated).toHaveBeenCalledTimes(1);
     });
@@ -95,16 +75,16 @@ describe('Transport', () => {
       const decorated = jest.fn(),
         func = subject.repeatable(decorated);
 
-      func('info', 'test');
-      func('info', 'test');
-      func('info', 'test');
-      func('info', 'test');
-      func('info', 'end');
+      func(new Message('test', { level: 'info' }));
+      func(new Message('test', { level: 'info' }));
+      func(new Message('test', { level: 'info' }));
+      func(new Message('test', { level: 'info' }));
+      func(new Message('end', { level: 'info' }));
 
       expect(decorated).toHaveBeenCalledTimes(3);
-      expect(decorated.mock.calls[0]).toEqual(['info', 'test', undefined]);
-      expect(decorated.mock.calls[1]).toEqual(['info', 'test', { repeat: 3 }]);
-      expect(decorated.mock.calls[2]).toEqual(['info', 'end', undefined]);
+      expect(decorated.mock.calls[0][0]).toHaveProperty('repeat', undefined);
+      expect(decorated.mock.calls[1][0]).toHaveProperty('repeat', 3);
+      expect(decorated.mock.calls[2][0]).toHaveProperty('repeat', undefined);
     });
   });
 
@@ -118,7 +98,7 @@ describe('Transport', () => {
       subject.log('debug', 'test');
       expect(subject.emitLog).not.toBeCalled();
     });
-    it.only('emit if level correspond', () => {
+    it('emit if level correspond', () => {
       subject.log('info', 'test');
       expect(subject.emitLog).toBeCalledWith(
         expect.objectContaining({
@@ -130,28 +110,7 @@ describe('Transport', () => {
     it('calls emit if prefilter disabled', () => {
       subject.unfiltered = true;
       subject.log('debug', 'test');
-      expect(subject.emitLog).toBeCalledWith('debug', 'test', undefined);
-    });
-  });
-  describe('formatMessage', () => {
-    let subject;
-    beforeEach(() => {
-      subject = new Transport({ logLevel: 'info' });
-    });
-    it('formats an error', () => {
-      expect(
-        subject.formatMessage(new Error('testing'))
-      ).toEqual('Error: testing');
-    });
-    it('formats an object', () => {
-      expect(
-        subject.formatMessage({ test: 'test' })
-      ).toEqual('{\n  "test": "test"\n}');
-    });
-    it('leaves a string alone', () => {
-      expect(
-        subject.formatMessage('test string')
-      ).toEqual('test string');
+      expect(subject.emitLog).toBeCalled();
     });
   });
 });
