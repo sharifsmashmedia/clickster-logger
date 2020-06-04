@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.2.0](https://github.com/kasthor/yoml/compare/v2.1.8...v2.2.0) (2020-06-04)
+
+
+### Features
+
+* slack formatting improvements ([e8a78fa](https://github.com/kasthor/yoml/commit/e8a78fab3e9b13826f78b3feb3941c279a42b557))
+
 ### [2.1.8](https://github.com/kasthor/yoml/compare/v2.1.7...v2.1.8) (2020-06-04)
 
 
