@@ -71,7 +71,7 @@ describe('Slack', () => {
       expect(response).toHaveProperty('text', expect.any(Object));
       expect(response.text).toHaveProperty('text', 'test');
     });
-    it('returns field section if simple object', () => {
+    it.skip('returns field section if simple object', () => {
       const message = new Message({ a: 1 }),
         response = subject.formatSection(message);
 
