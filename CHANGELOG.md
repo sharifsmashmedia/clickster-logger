@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.2.3](https://github.com/kasthor/yoml/compare/v2.2.2...v2.2.3) (2020-06-05)
+
+
+### Bug Fixes
+
+* remove fields thing ([89bebcd](https://github.com/kasthor/yoml/commit/89bebcd71ddc341ab7d92d039aaad4c37e880509))
+
 ### [2.2.2](https://github.com/kasthor/yoml/compare/v2.2.1...v2.2.2) (2020-06-04)
 
 
