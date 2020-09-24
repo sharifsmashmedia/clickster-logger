@@ -4,13 +4,14 @@
   "parserOptions": { "project": "./tsconfig.json" },
   "env": { "es6": true },
   "ignorePatterns": ["node_modules", "build", "coverage"],
-  "plugins": ["import", "eslint-comments", "functional"],
+  "plugins": ["@typescript-eslint", "import", "eslint-comments"],
   "extends": [
+    "airbnb-typescript/base",
     "eslint:recommended",
     "plugin:eslint-comments/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:import/typescript",
-    "plugin:functional/lite",
+    "plugin:prettier/recommended",
     "prettier",
     "prettier/@typescript-eslint"
   ],
@@ -29,6 +30,8 @@
     "sort-imports": [
       "error",
       { "ignoreDeclarationSort": true, "ignoreCase": true }
-    ]
+    ],
+    "import/prefer-default-export": 0,
+    "class-methods-use-this": 0
   }
 }
