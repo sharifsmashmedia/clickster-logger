@@ -1,9 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ITransport, Level } from '../types';
 
 import { Message } from './message';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-let _: any;
 export class Transport implements ITransport {
   logLevel: Level = 'debug';
 
@@ -21,7 +20,7 @@ export class Transport implements ITransport {
     this.logLevel = options.logLevel || 'debug';
   }
 
-  emitLog(message: Message) {}
+  emitLog(_message: Message) {}
 
   levelIndex(level: Level) {
     return Transport.levels.indexOf(level);
