@@ -15,7 +15,7 @@ export class Logger implements ILoggerFunctions {
 
   _operations: Record<string, Operation> = {};
 
-  _transports: (Console | Slack | Redis)[];
+  _transports: (Console | Slack | Redis)[] = [];
 
   static get levels(): Level[] {
     return Transport.levels;
