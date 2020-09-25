@@ -47,7 +47,7 @@ export class Slack extends Transport implements ITransport {
     channel: string;
     format: string;
     token: string;
-    topics: Record<string, any>;
+    topics: Record<string, string>;
   }) {
     super(options as any);
     this.unfiltered = true;
