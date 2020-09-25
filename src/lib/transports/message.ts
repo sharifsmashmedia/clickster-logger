@@ -1,36 +1,48 @@
 /* eslint-disable no-underscore-dangle */
-/* eslint-disable import/prefer-default-export */
 import os from 'os';
 
-import { Level } from '../constants/level';
+import { Level } from '../types';
 
 export class Message {
-  private level: Level;
+  level: Level;
 
   private _item: any;
 
   private _message = '';
 
-  private repeat: unknown;
+  repeat: boolean;
 
-  private topic: unknown;
+  topic: string;
 
-  private date: Date;
+  date: Date;
 
-  private hostname: string;
+  hostname: string;
 
-  private attachments: Message[];
+  attachments: Message[] = [];
 
   private _stack: null | string = null;
 
-  constructor(item: any, { attachments, level, repeat, topic } = {}) {
+  constructor(
+    item: any,
+    {
+      attachments,
+      level,
+      repeat,
+      topic,
+    }: {
+      attachments?: string[];
+      level?: Level;
+      repeat?: boolean;
+      topic?: string;
+    }
+  ) {
     this.level = level || 'info';
     this.item = item;
-    this.repeat = repeat;
-    this.topic = topic;
+    this.repeat = repeat || false;
+    this.topic = topic || 'info';
     this.date = new Date();
     this.hostname = os.hostname();
-    this.attachments = this.processAttachments(attachments);
+    this.attachments = attachments ? this.processAttachments(attachments) : [];
   }
 
   get stack() {
@@ -72,13 +84,13 @@ export class Message {
     if (this.isObject) {
       return Object.keys(this._item).length;
     }
-    if (_.isString(this._item)) {
+    if (typeof this._item === 'string') {
       return this._item.length;
     }
     return 0;
   }
 
-  processAttachments(items) {
+  processAttachments(items: string[]) {
     if (items) {
       return items.map((item) => new Message(item, { level: this.level }));
     }
@@ -86,7 +98,7 @@ export class Message {
     return [];
   }
 
-  isEqual(message) {
+  isEqual(message: Message): boolean {
     return (
       message &&
       message instanceof Message &&
@@ -95,7 +107,7 @@ export class Message {
     );
   }
 
-  formatedMessage(format) {
+  formattedMessage(format: string) {
     if (format === 'console') {
       return [
         this.date.toISOString(),
@@ -103,8 +115,6 @@ export class Message {
         this._message,
       ].join(':');
     }
-
-    // clean
     return this._message;
   }
 
@@ -113,7 +123,7 @@ export class Message {
     includeStack = true,
     includeAttachments = true,
   } = {}) {
-    const message = [this.formatedMessage(format)];
+    const message = [this.formattedMessage(format)];
 
     if (includeStack && this._stack) {
       message.push(this._stack);
@@ -128,7 +138,7 @@ export class Message {
     return message.join('\n');
   }
 
-  toJson({ format = 'clean' }) {
+  toJson({ format = 'clean' }): any {
     return {
       message: this.formattedMessage(format),
       level: this.level,

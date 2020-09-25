@@ -1,23 +1,21 @@
 import chalk from 'chalk';
 
-import { Message } from '../types/message';
+import { Colors, ITransport } from '../types';
 
+import { Message } from './message';
 import { Transport } from './transport';
 
-const colors = { error: 'red', warn: 'yellow', info: 'green' };
+const colors: Colors = { error: 'red', warn: 'yellow', info: 'green' };
 
-export class Console extends Transport {
+export class Console extends Transport implements ITransport {
   color(message: Message) {
-    const color: string | null =
+    const color: 'red' | 'yellow' | 'green' | null =
       colors[message.level as 'error' | 'warn' | 'info'] || null;
 
     if (color) {
-      // return chalk[color](message.toString({ format: 'console' }));
-
-      return chalk.red(message.toString());
+      return chalk[color](message.toString({ format: 'console' }));
     }
-    // return message.toString({ format: 'console' });
-    return message.toString();
+    return message.toString({ format: 'console' });
   }
 
   emitLog(message: Message): void {

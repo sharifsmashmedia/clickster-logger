@@ -1,30 +1,39 @@
-import { Message } from '../types/message';
+import { ITransport, Level } from '../types';
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Message } from './message';
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
 let _: any;
-export class Transport {
-  static get levels() {
+export class Transport implements ITransport {
+  logLevel: Level = 'debug';
+
+  unfiltered = false;
+
+  repeat = 0;
+
+  lastMessage: any = null;
+
+  static get levels(): Level[] {
     return ['error', 'warn', 'info', 'slow', 'time', 'debug'];
   }
 
-  constructor(options = {}) {
+  constructor(options: { logLevel?: Level } = {}) {
     this.logLevel = options.logLevel || 'debug';
-    this.unfiltered = false;
   }
 
-  levelIndex(level) {
+  emitLog(message: Message) {}
+
+  levelIndex(level: Level) {
     return Transport.levels.indexOf(level);
   }
 
-  showLevel(level) {
-    return (
-      this.levelIndex(level) <= this.levelIndex(this.logLevel.toLowerCase())
-    );
+  showLevel(level: Level) {
+    return this.levelIndex(level) <= this.levelIndex(this.logLevel);
   }
 
-  loggable(func) {
-    return (message) => {
-      // eslint-disable-line func-names
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  loggable(func: Function) {
+    return (message: Message) => {
       if (this.showLevel(message.level)) {
         return func(message);
       }
@@ -33,8 +42,9 @@ export class Transport {
     };
   }
 
-  repeatable(func) {
-    return (message) => {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  repeatable(func: Function) {
+    return (message: Message) => {
       const lastRepeat = this.repeat;
       const lastRepeatMessage = this.lastMessage;
       const isRepeat = this.isRepeat(message);
@@ -51,10 +61,11 @@ export class Transport {
     };
   }
 
-  isRepeat(message) {
+  isRepeat(message: Message) {
     const isRepeat = message.isEqual(this.lastMessage);
 
     if (isRepeat) {
+      // eslint-disable-next-line no-plusplus
       this.repeat++;
     } else {
       this.repeat = 0;
@@ -64,7 +75,7 @@ export class Transport {
     return isRepeat;
   }
 
-  log(level, message, options) {
+  log(level: Level, message: any, options: any) {
     const messageObject = new Message(message, { level, ...options });
 
     if (this.unfiltered) {
@@ -76,14 +87,13 @@ export class Transport {
     );
   }
 
-  emitRepeat(level, times, options) {
+  emitRepeat(level: Level, times: number, options: any) {
     const message = options.originalMessage;
     this.emitLog(
-      level,
-      `${message} (repeated ${times} time${times === 1 ? '' : 's'})`,
-      _.omit(options, 'originalMessage')
+      new Message(
+        `${message} (repeated ${times} time${times === 1 ? '' : 's'})`,
+        { ...options, level }
+      )
     );
   }
-
-  emitLog(message: Message): void {}
 }
